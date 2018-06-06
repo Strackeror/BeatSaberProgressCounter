@@ -61,15 +61,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Counter.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionUtil.cs" />
+    <Compile Include="ScoreCounter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assembly-CSharp.dll" />
     <Content Include="IllusionPlugin.dll" />
+    <Content Include="TextMeshPro-1.0.55.2017.1.0b12.dll" />
+    <Content Include="UnityEngine.CoreModule.dll" />
+    <Content Include="UnityEngine.dll" />
+    <Content Include="UnityEngine.UI.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /D $(TargetPath) D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Plugins\</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
