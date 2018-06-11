@@ -15,7 +15,7 @@ namespace ProgressCounter
     {
         public string Name => "Progress";
 
-        public string Version => "1.0";
+        public string Version => "2.0";
 
         public void OnApplicationQuit()
         {

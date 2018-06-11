@@ -55,9 +55,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\UnityEngine.UIModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,11 +81,12 @@
     <Content Include="TextMeshPro-1.0.55.2017.1.0b12.dll" />
     <Content Include="UnityEngine.CoreModule.dll" />
     <Content Include="UnityEngine.dll" />
+    <Content Include="UnityEngine.TextRenderingModule.dll" />
     <Content Include="UnityEngine.UI.dll" />
+    <Content Include="UnityEngine.UIModule.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /Y /D $(TargetPath) D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Plugins</PostBuildEvent>
   </PropertyGroup>
 </Project>
