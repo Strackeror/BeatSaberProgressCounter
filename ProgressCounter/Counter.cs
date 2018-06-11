@@ -52,6 +52,7 @@ namespace ProgressCounter
             _image.sprite = image.sprite;
             _image.type = Image.Type.Filled;
             _image.fillMethod = Image.FillMethod.Radial360;
+            _image.fillOrigin = (int) Image.Origin360.Top;
             _image.fillClockwise = true;
 
 
