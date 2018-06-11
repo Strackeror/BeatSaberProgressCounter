@@ -8,68 +8,36 @@ using TMPro;
 
 namespace ProgressCounter
 {
-    /*public class ScoreCounter : MonoBehaviour
-    {
-        TextMeshPro _scoreMesh;
-        ScoreController _scoreController;
-
-        int _maxPossibleScore = 1;
-
-        void Start()
-        {
-            _scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
-            _scoreMesh.text = "0.0%";
-            _scoreMesh.fontSize = 4;
-            _scoreMesh.color = Color.white;
-            _scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
-            _scoreMesh.rectTransform.position = new Vector3(2.9f, -4.5f, 7f) - new Vector3(_scoreMesh.rectTransform.offsetMin.x, _scoreMesh.rectTransform.offsetMin.y);
-            _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-
-            GameplayManager gameplayManager = FindObjectOfType<GameplayManager>();
-            if (gameplayManager != null)
-            {
-                GameSongController songController = ReflectionUtil.GetPrivateField<GameSongController>(gameplayManager, "_gameSongController");
-                if (songController != null)
-                {
-                    SongData songData = ReflectionUtil.GetPrivateField<SongData>(songController, "_songData");
-                    if (songData != null)
-                    {
-                        this._maxPossibleScore = ScoreController.MaxScoreForNumberOfNotes(songData.notesCount);
-                    }
-                }
-            }
-
-            if (_scoreController != null)
-            {
-                _scoreController.scoreDidChangeEvent += UpdateScore;
-            }
-
-        }
-
-        void UpdateScore(int score)
-        {
-            if (_scoreMesh != null)
-                _scoreMesh.text = (((float)score / (float)_maxPossibleScore) * 100.0f).ToString("F1") + "%";
-        }
-
-    }*/
-    
     public class ScoreCounter : MonoBehaviour
     {
         TextMeshPro _scoreMesh;
         ScoreController _scoreController;
         SongObjectExecutionRatingsRecorder _objectRatingRecorder;
 
+        GameObject _RankObject;
+        TextMeshPro _RankText;
+
         int _maxPossibleScore = 0;
 
         private void Awake()
         {
             _scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
-            _scoreMesh.text = "100.0% - SSS";
+            _scoreMesh.text = "100.0%";
             _scoreMesh.fontSize = 3;
             _scoreMesh.color = Color.white;
             _scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
-            _scoreMesh.rectTransform.position = new Vector3(2.7f, -4.5f, 7f) - new Vector3(_scoreMesh.rectTransform.offsetMin.x, _scoreMesh.rectTransform.offsetMin.y);
+            _scoreMesh.alignment = TextAlignmentOptions.Center;
+            _scoreMesh.rectTransform.position = new Vector3(3.25f, 0.5f, 7f);
+
+            _RankObject = new GameObject();
+            _RankText = _RankObject.AddComponent<TextMeshPro>();
+            _RankText.text = "SSS";
+            _RankText.fontSize = 4;
+            _RankText.color = Color.white;
+            _RankText.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
+            _RankText.alignment = TextAlignmentOptions.Center;
+            _RankText.rectTransform.position = new Vector3(3.25f, 0.1f, 7f);
+
             _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
             _objectRatingRecorder = FindObjectOfType<SongObjectExecutionRatingsRecorder>();
 
@@ -82,7 +50,7 @@ namespace ProgressCounter
 
         public string GetRank(int score, float prec)
         {
-            if (score == _maxPossibleScore)
+            if (score >= _maxPossibleScore)
             {
                 return "SSS";
             }
@@ -123,7 +91,7 @@ namespace ProgressCounter
                 if (_ratings != null)
                 {
                     int notes = 0;
-                    foreach(SongObjectExecutionRating rating in _ratings)
+                    foreach (SongObjectExecutionRating rating in _ratings)
                     {
                         if (rating.songObjectRatingType == SongObjectExecutionRating.SongObjectExecutionRatingType.Note)
                             notes++;
@@ -135,10 +103,17 @@ namespace ProgressCounter
             if (_scoreMesh != null)
             {
                 if (_maxPossibleScore == 0)
-                    _scoreMesh.text = "100.0% - SSS";
+                {
+                    _scoreMesh.text = "100.0%";
+                    _RankText.text = "SSS";
+                }
                 else
-                    _scoreMesh.text = (Mathf.Clamp(percent,0.0f,1.0f) * 100.0f).ToString("F1") + "% - " + GetRank(score, percent);
+                {
+                    _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F1") + "%";
+                    _RankText.text = GetRank(score, percent);
+                }
+
             }
         }
-    } 
+    }
 }
