@@ -29,8 +29,13 @@ namespace ProgressCounter
             _timeMesh.rectTransform.position = new Vector3(0.25f, -2f, 7.5f);
             _audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
 
+
+            Console.Write("------------- VALUE = ");
+            Console.WriteLine(this.gameObject.scene.buildIndex);
+
             var image = ReflectionUtil.GetPrivateField<Image>(
                 Resources.FindObjectsOfTypeAll<ScoreMultiplierUIController>().First(), "_multiplierProgressImage");
+
 
             GameObject g = new GameObject();
             Canvas canvas = g.AddComponent<Canvas>();

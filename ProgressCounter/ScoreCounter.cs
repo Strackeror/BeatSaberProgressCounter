@@ -12,7 +12,7 @@ namespace ProgressCounter
     {
         TextMeshPro _scoreMesh;
         ScoreController _scoreController;
-        SongObjectExecutionRatingsRecorder _objectRatingRecorder;
+        BeatmapObjectExecutionRatingsRecorder _objectRatingRecorder;
 
         GameObject _RankObject;
         TextMeshPro _RankText;
@@ -39,7 +39,7 @@ namespace ProgressCounter
             _RankText.rectTransform.position = new Vector3(3.25f, 0.1f, 7f);
 
             _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-            _objectRatingRecorder = FindObjectOfType<SongObjectExecutionRatingsRecorder>();
+            _objectRatingRecorder = FindObjectOfType<BeatmapObjectExecutionRatingsRecorder>();
 
             if (_scoreController != null)
             {
@@ -87,13 +87,13 @@ namespace ProgressCounter
 
             if (_objectRatingRecorder != null)
             {
-                List<SongObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<SongObjectExecutionRating>>(_objectRatingRecorder, "_songObjectExecutionRatings");
+                List<BeatmapObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<BeatmapObjectExecutionRating>>(_objectRatingRecorder, "_songObjectExecutionRatings");
                 if (_ratings != null)
                 {
                     int notes = 0;
-                    foreach (SongObjectExecutionRating rating in _ratings)
+                    foreach (BeatmapObjectExecutionRating rating in _ratings)
                     {
-                        if (rating.songObjectRatingType == SongObjectExecutionRating.SongObjectExecutionRatingType.Note)
+                        if (rating.beatmapObjectRatingType == BeatmapObjectExecutionRating.BeatmapObjectExecutionRatingType.Note)
                             notes++;
                     }
                     _maxPossibleScore = ScoreController.MaxScoreForNumberOfNotes(notes);
