@@ -35,7 +35,7 @@ namespace ProgressCounter
         {
             if (scene.buildIndex != 5) return;
             new GameObject("Counter").AddComponent<Counter>();
-            //new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+            new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
         }
 
         public void OnFixedUpdate()
