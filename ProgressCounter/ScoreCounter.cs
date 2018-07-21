@@ -84,10 +84,9 @@ namespace ProgressCounter
         public void UpdateScore(int score)
         {
             float percent = (float)score / (float)_maxPossibleScore;
-
             if (_objectRatingRecorder != null)
             {
-                List<BeatmapObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<BeatmapObjectExecutionRating>>(_objectRatingRecorder, "_songObjectExecutionRatings");
+                List<BeatmapObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<BeatmapObjectExecutionRating>>(_objectRatingRecorder, "_beatmapObjectExecutionRatings");
                 if (_ratings != null)
                 {
                     int notes = 0;
