@@ -15,7 +15,9 @@ namespace ProgressCounter
     {
         public string Name => "Progress";
 
-        public string Version => "2.0";
+        public string Version => "3.0";
+
+        private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
 
         public void OnApplicationQuit()
         {
@@ -33,7 +35,7 @@ namespace ProgressCounter
 
         private void OnSceneChanged(Scene _, Scene scene)
         {
-            if (scene.buildIndex != 5) return;
+            if (!env.Contains(scene.name)) return;
             new GameObject("Counter").AddComponent<Counter>();
             new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
         }
