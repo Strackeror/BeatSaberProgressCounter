@@ -21,6 +21,11 @@ namespace ProgressCounter
 
         private void Awake()
         {
+            Invoke("Init", 0.25f);
+        }
+
+        private void Init()
+        {
             _scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
             _scoreMesh.text = "100.0%";
             _scoreMesh.fontSize = 3;
@@ -45,7 +50,6 @@ namespace ProgressCounter
             {
                 _scoreController.scoreDidChangeEvent += UpdateScore;
             }
-
         }
 
         public string GetRank(int score, float prec)

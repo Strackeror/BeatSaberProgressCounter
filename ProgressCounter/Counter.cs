@@ -19,6 +19,11 @@ namespace ProgressCounter
 
         void Awake()
         {
+            Invoke("Init", 0.25f);
+        }
+
+        private void Init()
+        {
             _timeMesh = this.gameObject.AddComponent<TextMeshPro>();
             _timeMesh.text = "0%";
             _timeMesh.fontSize = 4;
@@ -52,7 +57,7 @@ namespace ProgressCounter
             _image.sprite = image.sprite;
             _image.type = Image.Type.Filled;
             _image.fillMethod = Image.FillMethod.Radial360;
-            _image.fillOrigin = (int) Image.Origin360.Top;
+            _image.fillOrigin = (int)Image.Origin360.Top;
             _image.fillClockwise = true;
 
 
