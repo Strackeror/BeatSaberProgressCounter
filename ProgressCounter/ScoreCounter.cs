@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,29 @@ namespace ProgressCounter
 
         int _maxPossibleScore = 0;
 
-        private void Awake()
+        IEnumerator WaitForLoad()
+        {
+            bool loaded = false;
+            while (!loaded)
+            {
+                _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
+                _objectRatingRecorder = FindObjectOfType<BeatmapObjectExecutionRatingsRecorder>();
+
+                if (_scoreController == null || _objectRatingRecorder == null)
+                    yield return new WaitForSeconds(0.1f);
+                else
+                    loaded = true;
+            }
+
+            Init();
+        }
+
+        void Awake()
+        {
+            StartCoroutine(WaitForLoad());
+        }
+
+        private void Init()
         {
             _scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
             _scoreMesh.text = "100.0%";
@@ -38,14 +61,8 @@ namespace ProgressCounter
             _RankText.alignment = TextAlignmentOptions.Center;
             _RankText.rectTransform.position = new Vector3(3.25f, 0.1f, 7f);
 
-            _scoreController = Resources.FindObjectsOfTypeAll<ScoreController>().FirstOrDefault();
-            _objectRatingRecorder = FindObjectOfType<BeatmapObjectExecutionRatingsRecorder>();
-
             if (_scoreController != null)
-            {
                 _scoreController.scoreDidChangeEvent += UpdateScore;
-            }
-
         }
 
         public string GetRank(int score, float prec)
