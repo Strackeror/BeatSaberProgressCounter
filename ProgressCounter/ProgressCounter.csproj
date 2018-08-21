@@ -77,6 +77,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /D $(TargetPath) D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Plugins</PostBuildEvent>
   </PropertyGroup>
 </Project>
