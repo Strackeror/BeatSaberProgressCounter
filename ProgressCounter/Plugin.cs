@@ -13,27 +13,29 @@ namespace ProgressCounter
 {
     public class Plugin : IPlugin
     {
-        public string Name => "Progress";
+        public string Name => "ProgressCounter";
+        public string Version => "2.1";
 
-        public string Version => "2.0";
+        private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
+        bool _init = false;
 
         public void OnApplicationQuit()
         {
             SceneManager.activeSceneChanged -= OnSceneChanged;
         }
 
-        bool _init = false;
-
         public void OnApplicationStart()
         {
             if (_init) return;
             _init = true;
+
             SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
         {
-            if (scene.buildIndex != 5) return;
+            if (!env.Contains(scene.name)) return;
+
             new GameObject("Counter").AddComponent<Counter>();
             new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
         }
