@@ -18,6 +18,8 @@ namespace ProgressCounter
         AudioTimeSyncController _audioTimeSync;
         Image _image;
 
+        bool useTimeLeft = false;
+
         IEnumerator WaitForLoad()
         {
             bool loaded = false;
@@ -48,7 +50,7 @@ namespace ProgressCounter
             _timeMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
             _timeMesh.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1f);
             _timeMesh.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 1f);
-            _timeMesh.rectTransform.position = new Vector3(0.25f, -2f, 7.5f);
+            _timeMesh.rectTransform.position = Plugin.progressCounterPosition;
 
             var image = ReflectionUtil.GetPrivateField<Image>(
                 Resources.FindObjectsOfTypeAll<ScoreMultiplierUIController>().First(), "_multiplierProgressImage");
@@ -89,6 +91,8 @@ namespace ProgressCounter
 
             g.GetComponent<RectTransform>().SetParent(this.transform, false);
             g.transform.localPosition = new Vector3(-0.25f, .25f, 0f);
+
+            useTimeLeft = Plugin.progressTimeLeft;
         }
 
         void Update()
@@ -99,7 +103,14 @@ namespace ProgressCounter
                 return;
             }
 
-            _timeMesh.text = $"{Math.Floor(_audioTimeSync.songTime / 60):N0}:{Math.Floor(_audioTimeSync.songTime % 60):00}";
+            var time = 0f;
+            if (useTimeLeft)
+                time = _audioTimeSync.songLength - _audioTimeSync.songTime;
+            else
+                time = _audioTimeSync.songTime;
+                
+
+            _timeMesh.text = $"{Math.Floor(time / 60):N0}:{Math.Floor(time % 60):00}";
             _image.fillAmount = _audioTimeSync.songTime / _audioTimeSync.songLength;
         }
     }

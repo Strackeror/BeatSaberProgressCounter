@@ -50,7 +50,7 @@ namespace ProgressCounter
             _scoreMesh.color = Color.white;
             _scoreMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
             _scoreMesh.alignment = TextAlignmentOptions.Center;
-            _scoreMesh.rectTransform.position = new Vector3(3.25f, 0.5f, 7f);
+            _scoreMesh.rectTransform.position = Plugin.scoreCounterPosition;
 
             _RankObject = new GameObject();
             _RankText = _RankObject.AddComponent<TextMeshPro>();
@@ -59,7 +59,7 @@ namespace ProgressCounter
             _RankText.color = Color.white;
             _RankText.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
             _RankText.alignment = TextAlignmentOptions.Center;
-            _RankText.rectTransform.position = new Vector3(3.25f, 0.1f, 7f);
+            _RankText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.4f, 0f);
 
             if (_scoreController != null)
                 _scoreController.scoreDidChangeEvent += UpdateScore;
