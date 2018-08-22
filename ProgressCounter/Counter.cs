@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,17 +18,37 @@ namespace ProgressCounter
         AudioTimeSyncController _audioTimeSync;
         Image _image;
 
-        void Awake()
+        IEnumerator WaitForLoad()
+        {
+            bool loaded = false;
+            while (!loaded)
+            {
+                _audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
+
+                if (_audioTimeSync == null)
+                    yield return new WaitForSeconds(0.01f);
+                else
+                    loaded = true;
+            }
+
+            Init();
+        }
+
+        private void Awake()
+        {
+            StartCoroutine(WaitForLoad());
+        }
+
+        void Init()
         {
             _timeMesh = this.gameObject.AddComponent<TextMeshPro>();
-            _timeMesh.text = "0%";
+            _timeMesh.text = "0:00";
             _timeMesh.fontSize = 4;
             _timeMesh.color = Color.white;
             _timeMesh.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
             _timeMesh.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1f);
             _timeMesh.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 1f);
             _timeMesh.rectTransform.position = new Vector3(0.25f, -2f, 7.5f);
-            _audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
 
             var image = ReflectionUtil.GetPrivateField<Image>(
                 Resources.FindObjectsOfTypeAll<ScoreMultiplierUIController>().First(), "_multiplierProgressImage");
@@ -52,7 +73,7 @@ namespace ProgressCounter
             _image.sprite = image.sprite;
             _image.type = Image.Type.Filled;
             _image.fillMethod = Image.FillMethod.Radial360;
-            _image.fillOrigin = (int) Image.Origin360.Top;
+            _image.fillOrigin = (int)Image.Origin360.Top;
             _image.fillClockwise = true;
 
 
@@ -72,9 +93,14 @@ namespace ProgressCounter
 
         void Update()
         {
+            if (_audioTimeSync == false)
+            {
+                _audioTimeSync = Resources.FindObjectsOfTypeAll<AudioTimeSyncController>().FirstOrDefault();
+                return;
+            }
+
             _timeMesh.text = $"{Math.Floor(_audioTimeSync.songTime / 60):N0}:{Math.Floor(_audioTimeSync.songTime % 60):00}";
             _image.fillAmount = _audioTimeSync.songTime / _audioTimeSync.songLength;
-
         }
     }
 }
