@@ -28,12 +28,14 @@ namespace ProgressCounter
         {
             if (_init) return;
             _init = true;
+
             SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
         {
             if (!env.Contains(scene.name)) return;
+
             new GameObject("Counter").AddComponent<Counter>();
             new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
         }
