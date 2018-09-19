@@ -15,7 +15,7 @@ namespace ProgressCounter
     public class Plugin : IPlugin
     {
         public string Name => "ProgressCounter";
-        public string Version => "3.0";
+        public string Version => "3.1";
 
         private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
         bool _init = false;

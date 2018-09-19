@@ -108,7 +108,9 @@ namespace ProgressCounter
                 time = _audioTimeSync.songLength - _audioTimeSync.songTime;
             else
                 time = _audioTimeSync.songTime;
-                
+
+            if (time <= 0f)
+                return;
 
             _timeMesh.text = $"{Math.Floor(time / 60):N0}:{Math.Floor(time % 60):00}";
             _image.fillAmount = _audioTimeSync.songTime / _audioTimeSync.songLength;
