@@ -73,6 +73,19 @@ namespace ProgressCounter
             }
 
             progressCounterDecimalPrecision = (float)Math.Floor((ModPrefs.GetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 1, true)));
+            //Force progressCounterDecimalPosition to be from 1-4 if outside range
+            if(progressCounterDecimalPrecision < 1)
+            {
+                progressCounterDecimalPrecision = 1;
+                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 1);
+            }
+            if(progressCounterDecimalPrecision > 4)
+            {
+                progressCounterDecimalPrecision = 4;
+                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 4);
+            }
+
+
 
 
             SceneManager.activeSceneChanged += OnSceneChanged;
