@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,7 +100,11 @@ namespace ProgressCounter
 
         public void UpdateScore(int score)
         {
-            float percent = (float)score / (float)_maxPossibleScore;
+            float precision = ProgressCounter.Plugin.progressCounterDecimalPrecision;
+            float roundMultiple = 100 * (float)(Math.Pow(10, precision) );
+
+
+            float percent = (float)Math.Floor( ( ((float)score / (float)_maxPossibleScore) ) * roundMultiple) /  roundMultiple;
             if (_objectRatingRecorder != null)
             {
                 List<BeatmapObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<BeatmapObjectExecutionRating>>(_objectRatingRecorder, "_beatmapObjectExecutionRatings");
@@ -125,7 +129,8 @@ namespace ProgressCounter
                 }
                 else
                 {
-                    _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F1") + "%";
+                
+                    _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F" + precision) + "%";
                     _RankText.text = GetRank(score, percent);
                 }
 
