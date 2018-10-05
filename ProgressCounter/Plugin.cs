@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +23,7 @@ namespace ProgressCounter
         public static Vector3 scoreCounterPosition = new Vector3(3.25f, 0.5f, 7f);
         public static bool progressTimeLeft = false;
         public static Vector3 progressCounterPosition = new Vector3(0.25f, -2f, 7.5f);
+        public static float progressCounterDecimalPrecision;
 
         public void OnApplicationQuit()
         {
@@ -71,15 +72,25 @@ namespace ProgressCounter
                 progressTimeLeft = ModPrefs.GetBool("BeatSaberProgressCounter", "progressTimeLeft");
             }
 
+            progressCounterDecimalPrecision = (float)Math.Floor((ModPrefs.GetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 1, true)));
+
+
             SceneManager.activeSceneChanged += OnSceneChanged;
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
         {
+            if (scene.name == "Menu")
+            {
+                ProgressUI.CreateSettingsUI();
+            }
+
+
             if (!env.Contains(scene.name)) return;
 
             new GameObject("Counter").AddComponent<Counter>();
             new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+
         }
 
         public void OnFixedUpdate()
