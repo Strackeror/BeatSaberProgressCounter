@@ -100,7 +100,7 @@ namespace ProgressCounter
 
         public void UpdateScore(int score)
         {
-            float percent = (float)score / (float)_maxPossibleScore;
+             float percent = (float)Math.Floor( ( ((float)score / (float)_maxPossibleScore) ) * 10000) /  10000;
             if (_objectRatingRecorder != null)
             {
                 List<BeatmapObjectExecutionRating> _ratings = ReflectionUtil.GetPrivateField<List<BeatmapObjectExecutionRating>>(_objectRatingRecorder, "_beatmapObjectExecutionRatings");
@@ -125,7 +125,7 @@ namespace ProgressCounter
                 }
                 else
                 {
-                    _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F1") + "%";
+                    _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F2") + "%";
                     _RankText.text = GetRank(score, percent);
                 }
 
