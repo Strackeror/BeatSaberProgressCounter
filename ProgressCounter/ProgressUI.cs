@@ -16,15 +16,6 @@ namespace ProgressCounter
     class ProgressUI : MonoBehaviour
     {
 
-        public void Awake()
-        {
-
-        }
-
-
-
-
-
         public static void CreateSettingsUI()
         {
             var subMenu = SettingsUI.CreateSubMenu("Progress Counter");
@@ -50,19 +41,22 @@ namespace ProgressCounter
 
             precisionMenu.GetValue += delegate
             {
+
                 return Plugin.progressCounterDecimalPrecision;
             };
 
             precisionMenu.SetValue += delegate (float value)
             {
                 Plugin.progressCounterDecimalPrecision = value;
+
+                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", value);
             };
 
             precisionMenu.FormatValue += delegate (float value)
             {
                 if (value == 1)
                 {
-                    return value + "Decimal Place";
+                    return value + " Decimal Place";
                 }
 
                 else
@@ -70,17 +64,10 @@ namespace ProgressCounter
                     return value + " Decimal Places";
                 }
 
-                };
+            };
 
 
         }
-
-        public static bool isMenuScene(Scene scene)
-        {
-            return (scene.name == "Menu");
-        }
-
-
 
 
     }
