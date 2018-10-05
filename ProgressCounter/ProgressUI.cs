@@ -11,6 +11,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using VRUI;
+using System.Globalization;
 namespace ProgressCounter
 {
     class ProgressUI : MonoBehaviour
@@ -41,13 +42,12 @@ namespace ProgressCounter
 
             precisionMenu.GetValue += delegate
             {
-
                 return Plugin.progressCounterDecimalPrecision;
             };
 
             precisionMenu.SetValue += delegate (float value)
             {
-                Plugin.progressCounterDecimalPrecision = value;
+                Plugin.progressCounterDecimalPrecision = (int)value;
 
                 ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", value);
             };
@@ -56,18 +56,101 @@ namespace ProgressCounter
             {
                 if (value == 1)
                 {
-                    return value + " Decimal Place";
+                    return value + " Place";
                 }
 
                 else
                 {
-                    return value + " Decimal Places";
+                    return value + " Places";
+                }
+
+            };
+
+            // Score Counter Position Preset
+            float[] scorePresetValues = { 0, 1, 2 };
+            var scorePositionPresetMenu = subMenu.AddList("Score Counter Position Preset", scorePresetValues);
+
+            scorePositionPresetMenu.GetValue += delegate
+            {
+                return Plugin.progressCounterScorePositionPreset;
+            };
+
+            scorePositionPresetMenu.SetValue += delegate (float value)
+            {
+                Plugin.progressCounterScorePositionPreset = (int)value;
+
+                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterScorePositionPreset", value);
+
+                Plugin.setScoreCounterPosition( (int)value);
+            };
+
+            scorePositionPresetMenu.FormatValue += delegate (float value)
+            {
+                switch ((int)value)
+                {
+                    case 0:
+                        return "User";
+                    case 1:
+                        return "Default";
+                    case 2:
+                        return "Left";
+                    default:
+                        return "";
+
+                }
+
+            };
+
+            //Timer Position Preset
+            float[] timerPresetValues = { 0, 1, 2, 3, 4, 5, 6 };
+            var positionPresetMenu = subMenu.AddList("Timer Position Preset", timerPresetValues);
+
+            positionPresetMenu.GetValue += delegate
+            {
+                return Plugin.progressCounterPositionPreset;
+            };
+
+            positionPresetMenu.SetValue += delegate (float value)
+            {
+                Plugin.progressCounterPositionPreset = (int)value;
+
+                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterPositionPreset", value);
+
+                Plugin.setProgressCounterPosition( (int)value);
+            };
+
+            positionPresetMenu.FormatValue += delegate (float value)
+            {
+                switch ((int)value)
+                {
+                    case 0:
+                        return "User";
+                    case 1:
+                        return "Default";
+                    case 2:
+                        return "Top";
+                    case 3:
+                        return "Top Left";
+                    case 4:
+                        return "Top Right";
+                    case 5:
+                        return "Bottom Left";
+                    case 6:
+                        return "Bottom Right";
+                    default:
+                        return "";
+
                 }
 
             };
 
 
+
+
+
         }
+    }
+}
 
 
     }
