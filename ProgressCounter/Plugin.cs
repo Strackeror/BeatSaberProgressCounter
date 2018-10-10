@@ -210,9 +210,6 @@ namespace ProgressCounter
                     break;
             }
 
-            ModPrefs.SetString("BeatSaberProgressCounter", "scorePosition",
-                     FormattableString.Invariant(
-                    $"{scoreCounterPosition.x:0.00},{scoreCounterPosition.y:0.00},{scoreCounterPosition.z:0.00}"));
         }
 
         public static void setProgressCounterPosition(int value)
@@ -259,9 +256,6 @@ namespace ProgressCounter
                     break;
             }
 
-            ModPrefs.SetString("BeatSaberProgressCounter", "progressPosition",
-             FormattableString.Invariant(
-           $"{progressCounterPosition.x:0.00},{progressCounterPosition.y:0.00},{progressCounterPosition.z:0.00}"));
 
         }
 
