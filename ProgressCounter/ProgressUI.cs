@@ -1,4 +1,4 @@
-using HMUI;
+﻿using HMUI;
 using IllusionPlugin;
 using System;
 using System.Collections;
