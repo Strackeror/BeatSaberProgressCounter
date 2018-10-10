@@ -297,6 +297,11 @@ namespace ProgressCounter
             {
                 localHighScore = 0;
             }
+            else if(oldNotes != noteCount && localHighScore != 0)
+            {
+                oldNotes = noteCount;
+                oldHighscore = localHighScore;
+            }
             
 
             Log(oldNotes.ToString() + "  "  + oldHighscore.ToString());
