@@ -1,99 +1,56 @@
 #if !NewUI
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using Object = UnityEngine.Object;
 using VRUI;
-using VRUIControls;
-using TMPro;
-using IllusionPlugin;
+
 namespace ProgressCounter
 {
-    public class ListViewController : ListSettingsController
+    public class ListViewController<T> : ListSettingsController
     {
-        public delegate float GetFloat();
-        public event GetFloat GetValue;
+        public Func<T> GetValue = () => default(T);
+        public Action<T> SetValue = (_) => { };
+        public Func<T, string> GetTextForValue = (_) => "?";
 
-        public delegate void SetFloat(float value);
-        public event SetFloat SetValue;
-
-        public delegate string StringForValue(float value);
-        public event StringForValue FormatValue;
-
-        protected float[] values;
-
-        public void SetValues(float[] values)
-        {
-            this.values = values;
-        }
+        public List<T> values;
 
         protected override void GetInitValues(out int idx, out int numberOfElements)
         {
-            numberOfElements = values.Length;
-            float value = 0;
-            if (GetValue != null)
-            {
-                value = GetValue();
-            }
+            numberOfElements = values.Count;
+            var value = GetValue();
 
-            idx = numberOfElements - 1;
-            for (int j = 0; j < values.Length; j++)
-            {
-                if (value == values[j])
-                {
-                    idx = j;
-                    return;
-                }
-            }
+            numberOfElements = values.Count();
+            idx = values.FindIndex(v => v.Equals(value));
         }
 
         protected override void ApplyValue(int idx)
         {
-            if (SetValue != null)
-            {
-                SetValue(values[idx]);
-            }
+            SetValue(values[idx]);
         }
 
         protected override string TextForValue(int idx)
         {
-            string text = "?";
-            if (FormatValue != null)
-            {
-                text = FormatValue(values[idx]);
-            }
-            return text;
+            return GetTextForValue(values[idx]);
         }
     }
 
     public class BoolViewController : SwitchSettingsController
     {
-        public delegate bool GetBool();
-        public event GetBool GetValue;
-
-        public delegate void SetBool(bool value);
-        public event SetBool SetValue;
+        public Func<bool> GetValue = () => false;
+        public Action<bool> SetValue = (a) => { };
 
         protected override bool GetInitValue()
         {
-            bool value = false;
-            if (GetValue != null)
-            {
-                value = GetValue();
-            }
-            return value;
+            return (GetValue());
         }
 
         protected override void ApplyValue(bool value)
         {
-            if (SetValue != null)
-            {
-                SetValue(value);
-            }
+            SetValue(value);
         }
 
         protected override string TextForValue(bool value)
@@ -116,27 +73,20 @@ namespace ProgressCounter
             return AddToggleSetting<BoolViewController>(name);
         }
 
-        public ListViewController AddList(string name, float[] values)
-        {
-            var view = AddListSetting<ListViewController>(name);
-            view.SetValues(values);
-            return view;
-        }
-
         public T AddListSetting<T>(string name) where T : ListSettingsController
         {
             var volumeSettings = Resources.FindObjectsOfTypeAll<VolumeSettingsController>().FirstOrDefault();
             GameObject newSettingsObject = MonoBehaviour.Instantiate(volumeSettings.gameObject, transform);
-            newSettingsObject.name = name;
 
-            VolumeSettingsController volume = newSettingsObject.GetComponent<VolumeSettingsController>();
-            T newListSettingsController = (T)ReflectionUtil.CopyComponent(volume, typeof(ListSettingsController), typeof(T), newSettingsObject);
+            var volume = newSettingsObject.GetComponent<VolumeSettingsController>();
+            T newSettingsController = (T)ReflectionUtil.CopyComponent(volume, typeof(ListSettingsController), typeof(T), newSettingsObject);
             MonoBehaviour.DestroyImmediate(volume);
 
+            newSettingsObject.name = name;
             newSettingsObject.GetComponentInChildren<TMP_Text>().text = name;
-
-            return newListSettingsController;
+            return newSettingsController;
         }
+
 
         public T AddToggleSetting<T>(string name) where T : SwitchSettingsController
         {
@@ -157,10 +107,10 @@ namespace ProgressCounter
     public class SettingsUI : MonoBehaviour
     {
         public static SettingsUI Instance = null;
-        MainMenuViewController _mainMenuViewController = null;
-        SimpleDialogPromptViewController prompt = null;
+        private MainMenuViewController _mainMenuViewController = null;
+        private SimpleDialogPromptViewController prompt = null;
 
-        static MainSettingsTableCell tableCell = null;
+        private static MainSettingsTableCell tableCell = null;
 
         public static void OnLoad()
         {
@@ -168,12 +118,12 @@ namespace ProgressCounter
             new GameObject("SettingsUI").AddComponent<SettingsUI>();
         }
 
-        public static bool isMenuScene(Scene scene)
+        public static bool IsMenuScene(Scene scene)
         {
             return (scene.name == "Menu");
         }
 
-        public static bool isGameScene(Scene scene)
+        public static bool IsGameScene(Scene scene)
         {
             return (scene.name == "StandardLevel");
         }
@@ -194,7 +144,7 @@ namespace ProgressCounter
 
         public void SceneManagerOnActiveSceneChanged(Scene arg0, Scene scene)
         {
-            if (isMenuScene(scene))
+            if (IsMenuScene(scene))
             {
                 _mainMenuViewController = Resources.FindObjectsOfTypeAll<MainMenuViewController>().First();
                 var _menuMasterViewController = Resources.FindObjectsOfTypeAll<StandardLevelSelectionFlowCoordinator>().First();
@@ -222,7 +172,7 @@ namespace ProgressCounter
 
         public static SubMenu CreateSubMenu(string name)
         {
-            if (!isMenuScene(SceneManager.GetActiveScene()))
+            if (!IsMenuScene(SceneManager.GetActiveScene()))
             {
                 Console.WriteLine("Cannot create settings menu when no in the main scene.");
                 return null;
@@ -254,7 +204,7 @@ namespace ProgressCounter
             return menu;
         }
 
-        static Transform CleanScreen(Transform screen)
+        private static Transform CleanScreen(Transform screen)
         {
             var container = screen.Find("Content").Find("SettingsContainer");
             var tempList = container.Cast<Transform>().ToList();
@@ -266,4 +216,5 @@ namespace ProgressCounter
         }
     }
 }
+
 #endif
