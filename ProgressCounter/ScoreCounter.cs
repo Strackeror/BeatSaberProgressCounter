@@ -14,9 +14,15 @@ namespace ProgressCounter
         TextMeshPro _scoreMesh;
         ScoreController _scoreController;
         BeatmapObjectExecutionRatingsRecorder _objectRatingRecorder;
+        float precision = Plugin.progressCounterDecimalPrecision;
+        float roundMultiple;
+
 
         GameObject _RankObject;
         TextMeshPro _RankText;
+
+        GameObject _localRankObject;
+        TextMeshPro _localRankText;
 
         int _maxPossibleScore = 0;
 
@@ -44,6 +50,7 @@ namespace ProgressCounter
 
         private void Init()
         {
+
             _scoreMesh = this.gameObject.AddComponent<TextMeshPro>();
             _scoreMesh.text = "100.0%";
             _scoreMesh.fontSize = 3;
@@ -61,6 +68,18 @@ namespace ProgressCounter
             _RankText.alignment = TextAlignmentOptions.Center;
             _RankText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.4f, 0f);
 
+            if (Plugin.localScoreCounterEnabled == true)
+            {
+                _localRankObject = new GameObject();
+                _localRankText = _localRankObject.AddComponent<TextMeshPro>();
+                _localRankText.text = "PB: " + (Mathf.Clamp(Plugin.localPercent, 0.0f, 1.0f) * 100.0f).ToString("F" + precision) + "%";
+                if (Plugin.localPercent == 0) _localRankText.text = "--";
+                _localRankText.fontSize = 4;
+                _localRankText.color = Color.white;
+                _localRankText.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
+                _localRankText.alignment = TextAlignmentOptions.Center;
+                _localRankText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.8f, 0f);
+            }
             if (_scoreController != null)
                 _scoreController.scoreDidChangeEvent += UpdateScore;
         }
@@ -100,10 +119,7 @@ namespace ProgressCounter
 
         public void UpdateScore(int score)
         {
-            float precision = ProgressCounter.Plugin.progressCounterDecimalPrecision;
-            float roundMultiple = 100 * (float)(Math.Pow(10, precision) );
-
-
+            roundMultiple = 100 * (float)(Math.Pow(10, this.precision));
             float percent = (float)Math.Floor( ( ((float)score / (float)_maxPossibleScore) ) * roundMultiple) /  roundMultiple;
             if (_objectRatingRecorder != null)
             {
@@ -129,9 +145,10 @@ namespace ProgressCounter
                 }
                 else
                 {
-                
+                    
                     _scoreMesh.text = (Mathf.Clamp(percent, 0.0f, 1.0f) * 100.0f).ToString("F" + precision) + "%";
                     _RankText.text = GetRank(score, percent);
+
                 }
 
             }
