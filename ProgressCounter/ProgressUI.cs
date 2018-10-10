@@ -21,6 +21,20 @@ namespace ProgressCounter
         {
             var subMenu = SettingsUI.CreateSubMenu("Progress Counter");
 
+            //Score Counter Enabled bool
+            var scoreCounterToggle = subMenu.AddBool("Show Score Counter");
+
+            scoreCounterToggle.GetValue += delegate
+            {
+                return Plugin.scoreCounterEnabled;
+            };
+
+            scoreCounterToggle.SetValue += delegate (bool value)
+            {
+                Plugin.scoreCounterEnabled = value;
+                ModPrefs.SetBool("BeatSaberProgressCounter", "scoreCounterEnabled", Plugin.scoreCounterEnabled);
+            };
+
             //Time Left Bool
             var timeLeft = subMenu.AddBool("Time Left");
 
@@ -143,15 +157,24 @@ namespace ProgressCounter
                 }
 
             };
+            //Score Counter Enabled bool
+            var localScoreCounterToggle = subMenu.AddBool("Show local Personal Best %");
+
+            localScoreCounterToggle.GetValue += delegate
+            {
+                return Plugin.localScoreCounterEnabled;
+            };
+
+            localScoreCounterToggle.SetValue += delegate (bool value)
+            {
+                Plugin.localScoreCounterEnabled = value;
+                ModPrefs.SetBool("BeatSaberProgressCounter", "localScoreCounterEnabled", Plugin.localScoreCounterEnabled);
+            };
 
 
 
 
 
         }
-    }
-}
-
-
     }
 }
