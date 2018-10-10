@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IllusionPlugin;
-
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Globalization;
+using UnityEngine.UI;
 
 namespace ProgressCounter
 {
@@ -23,15 +23,27 @@ namespace ProgressCounter
         public static Vector3 scoreCounterPosition = new Vector3(3.25f, 0.5f, 7f);
         public static bool progressTimeLeft = false;
         public static Vector3 progressCounterPosition = new Vector3(0.25f, -2f, 7.5f);
+        public static bool scoreCounterEnabled = true;
+        public static bool localScoreCounterEnabled = false;
 
         public static int progressCounterDecimalPrecision;
         public static int progressCounterPositionPreset;
         public static int progressCounterScorePositionPreset;
 
+        public static int localHighScore;
+        public static int noteCount;
+        public static int songMaxScore;
+        public static float localPercent;
+        public static float oldNotes = 0;
+        public static float oldHighscore = 0;
+
+
         public void OnApplicationQuit()
         {
             SceneManager.activeSceneChanged -= OnSceneChanged;
+           
         }
+
 
         public void OnApplicationStart()
         {
@@ -74,6 +86,27 @@ namespace ProgressCounter
             {
                 progressTimeLeft = ModPrefs.GetBool("BeatSaberProgressCounter", "progressTimeLeft");
             }
+
+            if (ModPrefs.GetString("BeatSaberProgressCounter", "scoreCounterEnabled") == "")
+            {
+                ModPrefs.SetBool("BeatSaberProgressCounter", "scoreCounterEnabled", scoreCounterEnabled);
+            }
+            else
+            {
+                scoreCounterEnabled = ModPrefs.GetBool("BeatSaberProgressCounter", "scoreCounterEnabled");
+            }
+
+            if (ModPrefs.GetString("BeatSaberProgressCounter", "localScoreCounterEnabled") == "")
+            {
+                ModPrefs.SetBool("BeatSaberProgressCounter", "localScoreCounterEnabled", localScoreCounterEnabled);
+            }
+            else
+            {
+                localScoreCounterEnabled = ModPrefs.GetBool("BeatSaberProgressCounter", "localScoreCounterEnabled");
+            }
+
+
+
             //Get value for Decimal Precision from modprefs
             progressCounterDecimalPrecision = ModPrefs.GetInt("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 1, true);
             limitRange(ref progressCounterDecimalPrecision, 1, 4);
@@ -90,8 +123,9 @@ namespace ProgressCounter
             //Set modprefs for timer position if Preset Selected
             setProgressCounterPosition(progressCounterPositionPreset);
 
-
+            
             SceneManager.activeSceneChanged += OnSceneChanged;
+
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
@@ -99,14 +133,36 @@ namespace ProgressCounter
             if (scene.name == "Menu")
             {
                 ProgressUI.CreateSettingsUI();
+                 var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
+                if (levelDetails != null)
+                {
+                    //    levelDifficulty.didSelectDifficultyEvent += LevelDifficulty_didSelectDifficultyEvent;
+                    levelDetails.didPressPlayButtonEvent += LevelDetails_didPressPlayButtonEvent;
+                }
+                else
+                {
+                    Log("Object is null");
+                }
+
             }
 
-
+          
             if (!env.Contains(scene.name)) return;
 
             new GameObject("Counter").AddComponent<Counter>();
-            new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
 
+            if (scoreCounterEnabled == true)
+            {
+                new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+            }
+
+
+
+        }
+
+        private void LevelDetails_didPressPlayButtonEvent(StandardLevelDetailViewController obj)
+        {
+            calcLocalPercent();
         }
 
         public void OnFixedUpdate()
@@ -123,6 +179,7 @@ namespace ProgressCounter
 
         public void OnUpdate()
         {
+
         }
 
         public static void setScoreCounterPosition(int value)
@@ -208,6 +265,54 @@ namespace ProgressCounter
 
         }
 
+        public static void calcLocalPercent()
+        {
+            var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
+
+            int i = 0;
+            string noteString =( ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_notesCountText").text);
+            if (!Int32.TryParse(noteString, out i))
+            i = 0;
+            else
+            noteCount = i;
+            Log(noteCount.ToString());
+            //Get Player Score
+            int j = 0;
+            string scoreString = ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_highScoreText").text;
+            if (!Int32.TryParse(scoreString, out j))
+                j = 0;
+            else
+                localHighScore = j;
+            Log(localHighScore.ToString());
+            //Get Max Score for song
+           songMaxScore = ScoreController.MaxScoreForNumberOfNotes(noteCount);
+
+            //Set / check values of oldNotes, OldScore
+            if (oldNotes == 0)
+            {
+                oldNotes = noteCount;
+                oldHighscore = localHighScore;
+            }
+            if(oldNotes != noteCount && oldHighscore == localHighScore)
+            {
+                localHighScore = 0;
+            }
+            
+
+            Log(oldNotes.ToString() + "  "  + oldHighscore.ToString());
+
+
+
+            Log(songMaxScore.ToString());
+            float roundMultiple = 100 * (float)(Math.Pow(10, Plugin.progressCounterDecimalPrecision));
+
+            localPercent = (float)Math.Floor(((localHighScore / (float)songMaxScore) * roundMultiple)) / roundMultiple;
+            Log(localPercent.ToString());
+            TextMeshProUGUI filler = new TextMeshProUGUI();
+            filler.text = "";
+
+        }
+
         public void limitRange(ref int value, int min, int max)
         {
             if (value > max)
@@ -222,7 +327,10 @@ namespace ProgressCounter
 
         }
 
-
+        public static void Log(string message)
+        {
+            Console.WriteLine("[{0}] {1}", "ProgressCounter", message);
+        }
 
     }
 }
