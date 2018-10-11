@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +16,6 @@ namespace ProgressCounter
         BeatmapObjectExecutionRatingsRecorder _objectRatingRecorder;
         float precision = Plugin.progressCounterDecimalPrecision;
         float roundMultiple;
-
 
         GameObject _RankObject;
         TextMeshPro _RankText;

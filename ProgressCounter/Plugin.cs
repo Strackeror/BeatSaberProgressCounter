@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -210,6 +210,9 @@ namespace ProgressCounter
                     break;
             }
 
+            ModPrefs.SetString("BeatSaberProgressCounter", "scorePosition",
+                     FormattableString.Invariant(
+                    $"{scoreCounterPosition.x:0.00},{scoreCounterPosition.y:0.00},{scoreCounterPosition.z:0.00}"));
         }
 
         public static void setProgressCounterPosition(int value)
@@ -256,6 +259,9 @@ namespace ProgressCounter
                     break;
             }
 
+            ModPrefs.SetString("BeatSaberProgressCounter", "progressPosition",
+             FormattableString.Invariant(
+           $"{progressCounterPosition.x:0.00},{progressCounterPosition.y:0.00},{progressCounterPosition.z:0.00}"));
 
         }
 
@@ -290,11 +296,6 @@ namespace ProgressCounter
             if(oldNotes != noteCount && oldHighscore == localHighScore)
             {
                 localHighScore = 0;
-            }
-            else if(oldNotes != noteCount && localHighScore != 0)
-            {
-                oldNotes = noteCount;
-                oldHighscore = localHighScore;
             }
             
 
