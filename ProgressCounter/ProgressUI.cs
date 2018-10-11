@@ -1,180 +1,136 @@
-using HMUI;
 using IllusionPlugin;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using VRUI;
-using System.Globalization;
+
 namespace ProgressCounter
 {
-    class ProgressUI : MonoBehaviour
+    internal class ProgressUI : MonoBehaviour
     {
+        //Necessary because monobehaviours can't be generics
+        public class DecimalSettingsViewController : ListViewController<int> { }
+        public class PositionSettingsViewController : ListViewController<Tuple<Vector3, string>> { }
 
         public static void CreateSettingsUI()
         {
             var subMenu = SettingsUI.CreateSubMenu("Progress Counter");
 
-            //Score Counter Enabled bool
-            var scoreCounterToggle = subMenu.AddBool("Show Score Counter");
-
-            scoreCounterToggle.GetValue += delegate
-            {
-                return Plugin.scoreCounterEnabled;
-            };
-
-            scoreCounterToggle.SetValue += delegate (bool value)
-            {
-                Plugin.scoreCounterEnabled = value;
-                ModPrefs.SetBool("BeatSaberProgressCounter", "scoreCounterEnabled", Plugin.scoreCounterEnabled);
-            };
-
             //Time Left Bool
-            var timeLeft = subMenu.AddBool("Time Left");
-
-            timeLeft.GetValue += delegate
             {
-                return Plugin.progressTimeLeft;
-            };
+                var timeLeft = subMenu.AddBool("Time Left");
 
-            timeLeft.SetValue += delegate (bool value)
-            {
-                Plugin.progressTimeLeft = value;
-                ModPrefs.SetBool("BeatSaberProgressCounter", "progressTimeLeft", Plugin.progressTimeLeft);
-            };
+                timeLeft.GetValue = () => Plugin.progressTimeLeft;
+
+                timeLeft.SetValue = (bool value) =>
+                {
+                    Plugin.progressTimeLeft = value;
+                    ModPrefs.SetBool("BeatSaberProgressCounter", "progressTimeLeft", Plugin.progressTimeLeft);
+                };
+            }
 
 
             //Decimal Precision
-            float[] precisionValues = { 1, 2, 3, 4 };
-            var precisionMenu = subMenu.AddList("Decimal Precision", precisionValues);
-
-            precisionMenu.GetValue += delegate
             {
-                return Plugin.progressCounterDecimalPrecision;
-            };
+                int[] precisionValues = { 1, 2, 3, 4 };
+                var precisionMenu = subMenu.AddListSetting<DecimalSettingsViewController>("Decimal Precision");
+                precisionMenu.values = precisionValues.ToList();
 
-            precisionMenu.SetValue += delegate (float value)
-            {
-                Plugin.progressCounterDecimalPrecision = (int)value;
+                precisionMenu.GetValue = () => Plugin.progressCounterDecimalPrecision;
 
-                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", value);
-            };
-
-            precisionMenu.FormatValue += delegate (float value)
-            {
-                if (value == 1)
+                precisionMenu.SetValue = (int value) =>
                 {
-                    return value + " Place";
-                }
+                    Plugin.progressCounterDecimalPrecision = (int)value;
 
-                else
-                {
-                    return value + " Places";
-                }
+                    ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", value);
+                };
 
-            };
+                precisionMenu.GetTextForValue = (int value) => value + " Place" + ((value == 1) ? "s" : "");
 
-            // Score Counter Position Preset
-            float[] scorePresetValues = { 0, 1, 2 };
-            var scorePositionPresetMenu = subMenu.AddList("Score Counter Position Preset", scorePresetValues);
 
-            scorePositionPresetMenu.GetValue += delegate
-            {
-                return Plugin.progressCounterScorePositionPreset;
-            };
+            }
 
-            scorePositionPresetMenu.SetValue += delegate (float value)
-            {
-                Plugin.progressCounterScorePositionPreset = (int)value;
-
-                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterScorePositionPreset", value);
-
-                Plugin.setScoreCounterPosition( (int)value);
-            };
-
-            scorePositionPresetMenu.FormatValue += delegate (float value)
-            {
-                switch ((int)value)
-                {
-                    case 0:
-                        return "User";
-                    case 1:
-                        return "Default";
-                    case 2:
-                        return "Left";
-                    default:
-                        return "";
-
-                }
-
-            };
 
             //Timer Position Preset
-            float[] timerPresetValues = { 0, 1, 2, 3, 4, 5, 6 };
-            var positionPresetMenu = subMenu.AddList("Timer Position Preset", timerPresetValues);
-
-            positionPresetMenu.GetValue += delegate
             {
-                return Plugin.progressCounterPositionPreset;
-            };
-
-            positionPresetMenu.SetValue += delegate (float value)
-            {
-                Plugin.progressCounterPositionPreset = (int)value;
-
-                ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterPositionPreset", value);
-
-                Plugin.setProgressCounterPosition( (int)value);
-            };
-
-            positionPresetMenu.FormatValue += delegate (float value)
-            {
-                switch ((int)value)
+                var timerPositions = new List<Tuple<Vector3, string>>
                 {
-                    case 0:
-                        return "User";
-                    case 1:
-                        return "Default";
-                    case 2:
-                        return "Top";
-                    case 3:
-                        return "Top Left";
-                    case 4:
-                        return "Top Right";
-                    case 5:
-                        return "Bottom Left";
-                    case 6:
-                        return "Bottom Right";
-                    default:
-                        return "";
+                    {Plugin.progressCounterPosition, "Current"},
+                    {new Vector3(.25f, -2.0f, 7.5f), "Default"},
+                    {new Vector3(.25f, 3.4f, 7.5f), "Top"},
+                    {new Vector3(-3.0f, 3.4f, 7f), "Top Left"},
+                    {new Vector3(3.5f, 3.4f, 7f), "Top Right"},
+                    {new Vector3(-3.0f, -1.75f, 7f), "Bottom Left"},
+                    {new Vector3(3.5f, -1.6f, 7f), "Bottom Right"},
+                };
 
-                }
+                var timerPositionMenu = subMenu.AddListSetting<PositionSettingsViewController>("Timer Position");
+                timerPositionMenu.values = timerPositions;
 
-            };
-            //Score Counter Enabled bool
-            var localScoreCounterToggle = subMenu.AddBool("Show local Personal Best %");
+                timerPositionMenu.GetValue = () => timerPositions[0];
+                timerPositionMenu.GetTextForValue = (value) => value.Item2;
+                timerPositionMenu.SetValue = (v) =>
+                {
+                    Plugin.progressCounterPosition = v.Item1;
+                    ModPrefs.SetString("BeatSaberProgressCounter", "progressPosition",
+                                        FormattableString.Invariant(
+                                       $"{Plugin.progressCounterPosition.x:0.00},{Plugin.progressCounterPosition.y:0.00},{Plugin.progressCounterPosition.z:0.00}"));
+                };
+            }
 
-            localScoreCounterToggle.GetValue += delegate
+
+            // Score Counter Position Preset
             {
-                return Plugin.localScoreCounterEnabled;
-            };
+                var scorePositions = new List<Tuple<Vector3, string>>
+                {
+                    {Plugin.scoreCounterPosition, "Current"},
+                    {new Vector3(3.25f, 0.5f, 7.0f), "Default" },
+                    {new Vector3(-3.25f, -0.3f, 7.0f), "Left"  },
+                };
 
-            localScoreCounterToggle.SetValue += delegate (bool value)
+                var scorePositionPresetMenu = subMenu.AddListSetting<PositionSettingsViewController>("Score Counter Position");
+                scorePositionPresetMenu.values = scorePositions;
+
+                scorePositionPresetMenu.GetValue = () => scorePositions[0];
+                scorePositionPresetMenu.GetTextForValue = (value) => value.Item2;
+                scorePositionPresetMenu.SetValue = (v) =>
+                {
+                    Plugin.scoreCounterPosition = v.Item1;
+                    ModPrefs.SetString("BeatSaberProgressCounter", "scorePosition",
+                                        FormattableString.Invariant(
+                                       $"{Plugin.scoreCounterPosition.x:0.00},{Plugin.scoreCounterPosition.y:0.00},{Plugin.scoreCounterPosition.z:0.00}"));
+                };
+            }
+
+
+            //Score Counter Toggle
             {
-                Plugin.localScoreCounterEnabled = value;
-                ModPrefs.SetBool("BeatSaberProgressCounter", "localScoreCounterEnabled", Plugin.localScoreCounterEnabled);
-            };
+                var scoreCounterToggle = subMenu.AddBool("Enable Score Counter");
+
+                scoreCounterToggle.GetValue = () => Plugin.scoreCounterEnabled;
+
+                scoreCounterToggle.SetValue = (bool value) =>
+                {
+                    Plugin.scoreCounterEnabled = value;
+                    ModPrefs.SetBool("BeatSaberProgressCounter", "scoreCounterEnabled", Plugin.scoreCounterEnabled);
+                };
+            }
 
 
+            //Personal Best Tracker Toggle
+            {
+                var pbTrackerToggle = subMenu.AddBool("Enable Personal Best Tracker");
 
+                pbTrackerToggle.GetValue = () => Plugin.pbTrackerEnabled;
 
-
+                pbTrackerToggle.SetValue = (bool value) =>
+                {
+                    Plugin.pbTrackerEnabled = value;
+                    ModPrefs.SetBool("BeatSaberProgressCounter", "scoreCounterEnabled", Plugin.pbTrackerEnabled);
+                };
+            }
         }
     }
 }
+        
+  
