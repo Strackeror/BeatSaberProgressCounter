@@ -133,7 +133,6 @@ namespace ProgressCounter
             {
                 localHighScore = 0;
             }
-            else if (value < min)
             else if (oldNotes != noteCount && localHighScore != 0)
             {
                 oldNotes = noteCount;
