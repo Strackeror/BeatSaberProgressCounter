@@ -76,10 +76,7 @@
     <Compile Include="Plugin.cs" />
     <Compile Include="ProgressUI.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-<<<<<<< HEAD
     <Compile Include="Util\SettingsUI.cs" />
-=======
->>>>>>> upstream/master
     <Compile Include="Util\ReflectionUtil.cs" />
     <Compile Include="ScoreCounter.cs" />
     <Compile Include="Util\SettingsUI.cs" />
