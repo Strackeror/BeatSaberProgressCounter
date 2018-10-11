@@ -4,10 +4,7 @@ using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-<<<<<<< HEAD
 using TMPro;
-=======
->>>>>>> upstream/master
 
 namespace ProgressCounter
 {
@@ -24,7 +21,6 @@ namespace ProgressCounter
         public static Vector3 progressCounterPosition = new Vector3(0.25f, -2f, 7.5f);
 
         public static int progressCounterDecimalPrecision;
-<<<<<<< HEAD
         public static bool scoreCounterEnabled = true;
 
         public static bool pbTrackerEnabled = true;
@@ -33,8 +29,6 @@ namespace ProgressCounter
         public static float oldNotes = 0;
         public static float oldHighScore = 0;
         public static float pbPercent;
-=======
->>>>>>> upstream/master
 
         public void OnApplicationQuit()
         {
@@ -57,7 +51,6 @@ namespace ProgressCounter
             if (_init) return;
             _init = true;
 
-<<<<<<< HEAD
             scoreCounterPosition = ReadVector(ModPrefs.GetString("BeatSaberProgressCounter", "scorePosition",
                 FormatVector(scoreCounterPosition), true));
             progressCounterPosition = ReadVector(ModPrefs.GetString("BeatSaberProgressCounter", "progressPosition",
@@ -84,15 +77,6 @@ namespace ProgressCounter
             if (env.Contains(scene.name))
             {
                 new GameObject("Counter").AddComponent<Counter>();
-=======
-            scoreCounterPosition = ReadVector(ModPrefs.GetString("BeatSaberProgressCounter", "scorePosition", 
-                FormatVector(scoreCounterPosition), true));
-            progressCounterPosition = ReadVector(ModPrefs.GetString("BeatSaberProgressCounter", "progressPosition", 
-                FormatVector(progressCounterPosition), true));
-
-            progressTimeLeft = ModPrefs.GetBool("BeatSaberProgressCounter", "progressTimeLeft", false, true);
-            progressCounterDecimalPrecision = ModPrefs.GetInt("BeatSaberProgressCounter", "progressCounterDecimalPrecision", 1, true);
->>>>>>> upstream/master
 
                 if(scoreCounterEnabled == true) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
             }
@@ -100,20 +84,7 @@ namespace ProgressCounter
 
         private void LevelDetails_didPressPlayButtonEvent(StandardLevelDetailViewController obj)
         {
-<<<<<<< HEAD
             calcLocalPercent();
-=======
-            if (scene.name == "Menu")
-            {
-                ProgressUI.CreateSettingsUI();
-            }
-
-            if (env.Contains(scene.name))
-            {
-                new GameObject("Counter").AddComponent<Counter>();
-                new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
-            }
->>>>>>> upstream/master
         }
 
         public void OnFixedUpdate()

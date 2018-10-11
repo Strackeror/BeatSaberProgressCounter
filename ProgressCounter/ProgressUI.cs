@@ -50,7 +50,6 @@ namespace ProgressCounter
 
             }
 
-<<<<<<< HEAD
 
             //Timer Position Preset
             {
@@ -80,8 +79,6 @@ namespace ProgressCounter
             }
 
 
-=======
->>>>>>> upstream/master
             // Score Counter Position Preset
             {
                 var scorePositions = new List<Tuple<Vector3, string>>
@@ -105,7 +102,6 @@ namespace ProgressCounter
                 };
             }
 
-<<<<<<< HEAD
 
             //Score Counter Toggle
             {
@@ -138,35 +134,3 @@ namespace ProgressCounter
 }
         
   
-=======
-            //Timer Position Preset
-            {
-                var timerPositions = new List<Tuple<Vector3, string>>
-                {
-                    {Plugin.progressCounterPosition, "Current"},
-                    {new Vector3(.25f, -2.0f, 7.5f), "Default"},
-                    {new Vector3(.25f, 3.4f, 7.5f), "Top"},
-                    {new Vector3(-3.0f, 3.4f, 7f), "Top Left"},
-                    {new Vector3(3.5f, 3.4f, 7f), "Top Right"},
-                    {new Vector3(-3.0f, -1.75f, 7f), "Bottom Left"},
-                    {new Vector3(3.5f, -1.6f, 7f), "Bottom Right"},
-                };
-
-                var timerPositionMenu = subMenu.AddListSetting<PositionSettingsViewController>("Timer Position");
-                timerPositionMenu.values = timerPositions;
-
-                timerPositionMenu.GetValue = () => timerPositions[0];
-                timerPositionMenu.GetTextForValue = (value) => value.Item2;
-                timerPositionMenu.SetValue = (v) =>
-                {
-                    Plugin.progressCounterPosition = v.Item1;
-                    ModPrefs.SetString("BeatSaberProgressCounter", "progressPosition",
-                                        FormattableString.Invariant(
-                                       $"{Plugin.progressCounterPosition.x:0.00},{Plugin.progressCounterPosition.y:0.00},{Plugin.progressCounterPosition.z:0.00}"));
-                };
-            }
-
-        }
-    }
-}
->>>>>>> upstream/master

@@ -1,7 +1,4 @@
-<<<<<<< HEAD
 
-=======
->>>>>>> upstream/master
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -150,16 +147,11 @@ namespace ProgressCounter
                 }
                 else
                 {
-<<<<<<< HEAD
                     float ratio = score / (float)_maxPossibleScore;
                     //Force percent to round down to decimal precision
                     ratio = (float)Math.Floor(ratio * roundMultiple) / roundMultiple;
 
 
-=======
-                    float ratio = score / (float) _maxPossibleScore; 
-                
->>>>>>> upstream/master
                     _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
                     _RankText.text = GetRank(score, ratio);
                 }
