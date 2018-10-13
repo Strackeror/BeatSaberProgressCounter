@@ -45,7 +45,7 @@ namespace ProgressCounter
                     ModPrefs.SetFloat("BeatSaberProgressCounter", "progressCounterDecimalPrecision", value);
                 };
 
-                precisionMenu.GetTextForValue = (int value) => value + " Place" + ((value == 1) ? "s" : "");
+                precisionMenu.GetTextForValue = (int value) => value + " Place" + ((value == 1) ? "" : "s");
 
 
             }
