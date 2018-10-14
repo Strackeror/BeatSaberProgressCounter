@@ -76,7 +76,7 @@ namespace ProgressCounter
                 _PbTrackerText = _PbTrackerObject.AddComponent<TextMeshPro>();
                 _PbTrackerText.text = "PB: " + (Mathf.Clamp(Plugin.pbPercent, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
                 if (Plugin.pbPercent == 0) _PbTrackerText.text = "--";
-                _PbTrackerText.fontSize = 4;
+                _PbTrackerText.fontSize = 2;
                 _PbTrackerText.color = Color.white;
                 _PbTrackerText.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
                 _PbTrackerText.alignment = TextAlignmentOptions.Center;
@@ -84,7 +84,7 @@ namespace ProgressCounter
             }
             if (_scoreController != null)
                 _scoreController.scoreDidChangeEvent += UpdateScore;
-
+            
         }
 
         public string GetRank(int score, float prec)
@@ -154,6 +154,10 @@ namespace ProgressCounter
 
                     _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
                     _RankText.text = GetRank(score, ratio);
+                    if (Plugin.pbPercent != 0 && Plugin.pbPercent > ratio)
+                        _scoreMesh.color = Color.red;
+                    else
+                        _scoreMesh.color = Color.white;
                 }
 
             }
