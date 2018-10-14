@@ -150,15 +150,14 @@ namespace ProgressCounter
                     float ratio = score / (float)_maxPossibleScore;
                     //Force percent to round down to decimal precision
                     ratio = (float)Math.Floor(ratio * roundMultiple) / roundMultiple;
-
-
-                    _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
-                    _RankText.text = GetRank(score, ratio);
                     if (Plugin.pbPercent != 0 && Plugin.pbPercent > ratio)
                         _scoreMesh.color = Color.red;
-                    else
+                    else if (Plugin.pbPercent != 0 && Plugin.pbPercent < ratio)
                         _scoreMesh.color = Color.white;
-                }
+
+                _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
+                _RankText.text = GetRank(score, ratio);
+            }
 
             }
         }
