@@ -101,6 +101,6 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /D $(TargetPath) D:\Apps\Oculus\Software\hyperbolic-magnetism-beat-saber\Plugins\</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(ProjectDir)\bin\Debug\ProgressCounter.dll" "C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins" /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

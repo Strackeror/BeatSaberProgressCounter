@@ -72,7 +72,7 @@ namespace ProgressCounter
                 //Force personal best percent to round down to decimal precision
                 Plugin.pbPercent = (float)Math.Floor(Plugin.pbPercent * roundMultiple) / roundMultiple;
 
-                _PbTrackerObject = new GameObject();
+                _PbTrackerObject = new GameObject("PB Tracker");
                 _PbTrackerText = _PbTrackerObject.AddComponent<TextMeshPro>();
                 _PbTrackerText.text = "PB: " + (Mathf.Clamp(Plugin.pbPercent, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
                 if (Plugin.pbPercent == 0) _PbTrackerText.text = "--";

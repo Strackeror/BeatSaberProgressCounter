@@ -33,6 +33,7 @@ namespace ProgressCounter
         public void OnApplicationQuit()
         {
             SceneManager.activeSceneChanged -= OnSceneChanged;
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         private string FormatVector(Vector3 v)
@@ -61,6 +62,17 @@ namespace ProgressCounter
             scoreCounterEnabled = ModPrefs.GetBool("BeatSaberProgressCounter", "scoreCounterEnabled", true, true);
 
             SceneManager.activeSceneChanged += OnSceneChanged;
+            SceneManager.sceneLoaded += OnSceneLoaded; 
+        }
+     
+        private void OnSceneLoaded(Scene scene, LoadSceneMode arg1)
+        {
+            if (env.Contains(scene.name))
+            {
+                new GameObject("Counter").AddComponent<Counter>();
+
+                if (scoreCounterEnabled == true) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+            }
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
@@ -73,18 +85,11 @@ namespace ProgressCounter
                 if (levelDetails != null) levelDetails.didPressPlayButtonEvent += LevelDetails_didPressPlayButtonEvent; ;
 
             }
-
-            if (env.Contains(scene.name))
-            {
-                new GameObject("Counter").AddComponent<Counter>();
-
-                if(scoreCounterEnabled == true) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
-            }
         }
 
         private void LevelDetails_didPressPlayButtonEvent(StandardLevelDetailViewController obj)
         {
-            calcLocalPercent();
+            CalcLocalPercent();
         }
 
         public void OnFixedUpdate()
@@ -103,7 +108,7 @@ namespace ProgressCounter
         {
         }
 
-        public static void calcLocalPercent()
+        public static void CalcLocalPercent()
         {
             var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
 
