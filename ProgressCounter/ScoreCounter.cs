@@ -67,7 +67,7 @@ namespace ProgressCounter
             _RankText.alignment = TextAlignmentOptions.Center;
             _RankText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.4f, 0f);
 
-            if (Plugin.pbTrackerEnabled == true)
+            if (Plugin.pbTrackerEnabled)
             {
                 //Force personal best percent to round down to decimal precision
                 Plugin.pbPercent = (float)Math.Floor(Plugin.pbPercent * roundMultiple) / roundMultiple;
@@ -84,7 +84,6 @@ namespace ProgressCounter
             }
             if (_scoreController != null)
                 _scoreController.scoreDidChangeEvent += UpdateScore;
-            
         }
 
         public string GetRank(int score, float prec)
@@ -155,10 +154,9 @@ namespace ProgressCounter
                     else if (Plugin.pbPercent != 0 && Plugin.pbPercent < ratio)
                         _scoreMesh.color = Color.white;
 
-                _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
-                _RankText.text = GetRank(score, ratio);
-            }
-
+                    _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
+                    _RankText.text = GetRank(score, ratio);
+                }
             }
         }
     }

@@ -71,7 +71,7 @@ namespace ProgressCounter
             {
                 new GameObject("Counter").AddComponent<Counter>();
 
-                if (scoreCounterEnabled == true) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+                if (scoreCounterEnabled) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
             }
         }
 
@@ -83,7 +83,6 @@ namespace ProgressCounter
 
                 var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
                 if (levelDetails != null) levelDetails.didPressPlayButtonEvent += LevelDetails_didPressPlayButtonEvent; ;
-
             }
         }
 
@@ -112,19 +111,17 @@ namespace ProgressCounter
         {
             var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
 
-            int i = 0;
             string noteString = (ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_notesCountText").text);
-            if (!Int32.TryParse(noteString, out i))
-                i = 0;
-            else
+            if (Int32.TryParse(noteString, out var i))
                 noteCount = i;
-            //Get Player Score
-            int j = 0;
-            string scoreString = ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_highScoreText").text;
-            if (!Int32.TryParse(scoreString, out j))
-                j = 0;
             else
+                i = 0;
+            //Get Player Score
+            string scoreString = ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_highScoreText").text;
+            if (Int32.TryParse(scoreString, out var j))
                 localHighScore = j;
+            else
+                j = 0;
             //Get Max Score for song
             int songMaxScore = ScoreController.MaxScoreForNumberOfNotes(noteCount);
 
@@ -147,7 +144,6 @@ namespace ProgressCounter
             float roundMultiple = 100 * (float)(Math.Pow(10, Plugin.progressCounterDecimalPrecision));
 
             pbPercent = (float)Math.Floor(((localHighScore / (float)songMaxScore) * roundMultiple)) / roundMultiple;
-            
         }
     }
 }

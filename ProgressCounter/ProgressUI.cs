@@ -46,8 +46,6 @@ namespace ProgressCounter
                 };
 
                 precisionMenu.GetTextForValue = (int value) => value + " Place" + ((value == 1) ? "" : "s");
-
-
             }
 
 
