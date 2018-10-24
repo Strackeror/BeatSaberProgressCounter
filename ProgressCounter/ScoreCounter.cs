@@ -67,24 +67,33 @@ namespace ProgressCounter
             _RankText.alignment = TextAlignmentOptions.Center;
             _RankText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.4f, 0f);
 
-            if (Plugin.pbTrackerEnabled == true)
+            if (Plugin.pbTrackerEnabled)
             {
-                //Force personal best percent to round down to decimal precision
-                Plugin.pbPercent = (float)Math.Floor(Plugin.pbPercent * roundMultiple) / roundMultiple;
+                SetPersonalBest(Plugin.pbPercent);
+            }
+            if (_scoreController != null)
+                _scoreController.scoreDidChangeEvent += UpdateScore;
+        }
 
+        //Sometimes a leaderboard request will run past creation of this object.
+        //In that case, we'll need to be able to change the personal best from the outside
+        public void SetPersonalBest(float pb)
+        {
+            //Force personal best percent to round down to decimal precision
+            pb = (float)Math.Floor(pb * roundMultiple) / roundMultiple;
+
+            if (_PbTrackerObject == null)
+            {
                 _PbTrackerObject = new GameObject("PB Tracker");
                 _PbTrackerText = _PbTrackerObject.AddComponent<TextMeshPro>();
-                _PbTrackerText.text = "PB: " + (Mathf.Clamp(Plugin.pbPercent, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
-                if (Plugin.pbPercent == 0) _PbTrackerText.text = "--";
                 _PbTrackerText.fontSize = 2;
                 _PbTrackerText.color = Color.white;
                 _PbTrackerText.font = Resources.Load<TMP_FontAsset>("Teko-Medium SDF No Glow");
                 _PbTrackerText.alignment = TextAlignmentOptions.Center;
-                _PbTrackerText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.8f, 0f);
             }
-            if (_scoreController != null)
-                _scoreController.scoreDidChangeEvent += UpdateScore;
-            
+            if (pb == 0) _PbTrackerText.text = "--";
+            else _PbTrackerText.text = "PB: " + (Mathf.Clamp(pb, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
+            _PbTrackerText.rectTransform.position = _scoreMesh.rectTransform.position + new Vector3(0f, -0.8f, 0f);
         }
 
         public string GetRank(int score, float prec)
@@ -155,10 +164,9 @@ namespace ProgressCounter
                     else if (Plugin.pbPercent != 0 && Plugin.pbPercent < ratio)
                         _scoreMesh.color = Color.white;
 
-                _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
-                _RankText.text = GetRank(score, ratio);
-            }
-
+                    _scoreMesh.text = (Mathf.Clamp(ratio, 0.0f, 1.0f) * 100.0f).ToString("F" + Plugin.progressCounterDecimalPrecision) + "%";
+                    _RankText.text = GetRank(score, ratio);
+                }
             }
         }
     }

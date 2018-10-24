@@ -15,6 +15,7 @@ namespace ProgressCounter
 
         private readonly string[] env = { "DefaultEnvironment", "BigMirrorEnvironment", "TriangleEnvironment", "NiceEnvironment" };
         private bool _init = false;
+        private static HMAsyncRequest _asyncRequest;
 
         public static bool progressTimeLeft = false;
         public static Vector3 scoreCounterPosition = new Vector3(3.25f, 0.5f, 7f);
@@ -26,8 +27,6 @@ namespace ProgressCounter
         public static bool pbTrackerEnabled = true;
         public static int noteCount;
         public static int localHighScore;
-        public static float oldNotes = 0;
-        public static float oldHighScore = 0;
         public static float pbPercent;
 
         public void OnApplicationQuit()
@@ -69,27 +68,17 @@ namespace ProgressCounter
         {
             if (env.Contains(scene.name))
             {
+                GetSongInfo();
+
                 new GameObject("Counter").AddComponent<Counter>();
 
-                if (scoreCounterEnabled == true) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
+                if (scoreCounterEnabled) new GameObject("ScoreCounter").AddComponent<ScoreCounter>();
             }
         }
 
         private void OnSceneChanged(Scene _, Scene scene)
         {
-            if (scene.name == "Menu")
-            {
-                ProgressUI.CreateSettingsUI();
-
-                var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
-                if (levelDetails != null) levelDetails.didPressPlayButtonEvent += LevelDetails_didPressPlayButtonEvent; ;
-
-            }
-        }
-
-        private void LevelDetails_didPressPlayButtonEvent(StandardLevelDetailViewController obj)
-        {
-            CalcLocalPercent();
+            if (scene.name == "Menu") ProgressUI.CreateSettingsUI();
         }
 
         public void OnFixedUpdate()
@@ -108,46 +97,56 @@ namespace ProgressCounter
         {
         }
 
-        public static void CalcLocalPercent()
+        public static void GetSongInfo()
         {
-            var levelDetails = Resources.FindObjectsOfTypeAll<StandardLevelDetailViewController>().FirstOrDefault();
+            var mainGameSceneSetupData = Resources.FindObjectsOfTypeAll<MainGameSceneSetupData>().First();
+            var playerLevelStatsData = PersistentSingleton<GameDataModel>.instance.gameDynamicData.GetCurrentPlayerDynamicData().GetPlayerLevelStatsData(mainGameSceneSetupData.difficultyLevel.level.levelID, mainGameSceneSetupData.difficultyLevel.difficulty, mainGameSceneSetupData.gameplayMode);
 
-            int i = 0;
-            string noteString = (ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_notesCountText").text);
-            if (!Int32.TryParse(noteString, out i))
-                i = 0;
-            else
-                noteCount = i;
+            //Get notes count
+            noteCount = mainGameSceneSetupData.difficultyLevel.beatmapData.notesCount;
+            
             //Get Player Score
-            int j = 0;
-            string scoreString = ReflectionUtil.GetPrivateField<TextMeshProUGUI>(levelDetails, "_highScoreText").text;
-            if (!Int32.TryParse(scoreString, out j))
-                j = 0;
-            else
-                localHighScore = j;
+            localHighScore = playerLevelStatsData.validScore ? playerLevelStatsData.highScore : 0;
+
+            //If we couldn't grab a local score, we'll try to grab one from the leaderboards
+            if (localHighScore == 0)
+            {
+                string leaderboardID = LeaderboardsModel.GetLeaderboardID(mainGameSceneSetupData.difficultyLevel, mainGameSceneSetupData.gameplayMode);
+                if (_asyncRequest != null)
+                {
+                    _asyncRequest.Cancel();
+                }
+                _asyncRequest = new HMAsyncRequest();
+
+                //Note: I'm leaving "around" as 10 intentionally so that this "looks" like a normal score request
+                //Don't judge. Old habits die hard.
+                PersistentSingleton<PlatformLeaderboardsModel>.instance.GetScoresAroundPlayer(leaderboardID, 10, _asyncRequest, LeaderboardsResultsReturned);
+            }
+            CalculatePercentage();
+        }
+
+        private static void CalculatePercentage()
+        {
             //Get Max Score for song
             int songMaxScore = ScoreController.MaxScoreForNumberOfNotes(noteCount);
 
-            //Set / check values of oldNotes, OldScore
-            if (oldNotes == 0)
-            {
-                oldNotes = noteCount;
-                oldHighScore = localHighScore;
-            }
-            else if (oldNotes != noteCount && oldHighScore == localHighScore)
-            {
-                localHighScore = 0;
-            }
-            else if (oldNotes != noteCount && localHighScore != 0)
-            {
-                oldNotes = noteCount;
-                oldHighScore = localHighScore;
-            }
+            float roundMultiple = 100 * (float)Math.Pow(10, progressCounterDecimalPrecision);
 
-            float roundMultiple = 100 * (float)(Math.Pow(10, Plugin.progressCounterDecimalPrecision));
+            pbPercent = (float)Math.Floor(localHighScore / (float)songMaxScore * roundMultiple) / roundMultiple;
 
-            pbPercent = (float)Math.Floor(((localHighScore / (float)songMaxScore) * roundMultiple)) / roundMultiple;
-            
+            //If the ScoreCounter has already been created, we'll have to set the Personal Best from out here
+            var scoreCounter = Resources.FindObjectsOfTypeAll<ScoreCounter>().FirstOrDefault();
+            if (scoreCounter != null) scoreCounter.SetPersonalBest(pbPercent);
+        }
+
+        //Callback for a leaderboard score request. Sets the PB score to the returned one
+        public static void LeaderboardsResultsReturned(PlatformLeaderboardsModel.GetScoresResult result, PlatformLeaderboardsModel.LeaderboardScore[] scores, int playerScoreIndex)
+        {
+            if (result == PlatformLeaderboardsModel.GetScoresResult.OK && playerScoreIndex >= 0)
+            {
+                localHighScore = scores.ElementAt(playerScoreIndex).score;
+                CalculatePercentage();
+            }
         }
     }
 }
