@@ -142,7 +142,7 @@ namespace ProgressCounter
         //Callback for a leaderboard score request. Sets the PB score to the returned one
         public static void LeaderboardsResultsReturned(PlatformLeaderboardsModel.GetScoresResult result, PlatformLeaderboardsModel.LeaderboardScore[] scores, int playerScoreIndex)
         {
-            if (result == PlatformLeaderboardsModel.GetScoresResult.OK && playerScoreIndex > 0)
+            if (result == PlatformLeaderboardsModel.GetScoresResult.OK && playerScoreIndex >= 0)
             {
                 localHighScore = scores.ElementAt(playerScoreIndex).score;
                 CalculatePercentage();
