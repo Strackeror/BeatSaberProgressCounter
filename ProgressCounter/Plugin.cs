@@ -99,8 +99,6 @@ namespace ProgressCounter
 
         public static void GetSongInfo()
         {
-            Console.WriteLine("CALCLOCAL");
-
             var mainGameSceneSetupData = Resources.FindObjectsOfTypeAll<MainGameSceneSetupData>().First();
             var playerLevelStatsData = PersistentSingleton<GameDataModel>.instance.gameDynamicData.GetCurrentPlayerDynamicData().GetPlayerLevelStatsData(mainGameSceneSetupData.difficultyLevel.level.levelID, mainGameSceneSetupData.difficultyLevel.difficulty, mainGameSceneSetupData.gameplayMode);
 
@@ -110,12 +108,9 @@ namespace ProgressCounter
             //Get Player Score
             localHighScore = playerLevelStatsData.validScore ? playerLevelStatsData.highScore : 0;
 
-            Console.WriteLine($"LOCALSCORE: {localHighScore}");
-
             //If we couldn't grab a local score, we'll try to grab one from the leaderboards
             if (localHighScore == 0)
             {
-                Console.WriteLine("STARTING GET LEDA");
                 string leaderboardID = LeaderboardsModel.GetLeaderboardID(mainGameSceneSetupData.difficultyLevel, mainGameSceneSetupData.gameplayMode);
                 if (_asyncRequest != null)
                 {
@@ -123,7 +118,6 @@ namespace ProgressCounter
                 }
                 _asyncRequest = new HMAsyncRequest();
 
-                Console.WriteLine("CALLING GET LEADERBOARDS");
                 //Note: I'm leaving "around" as 10 intentionally so that this "looks" like a normal score request
                 //Don't judge. Old habits die hard.
                 PersistentSingleton<PlatformLeaderboardsModel>.instance.GetScoresAroundPlayer(leaderboardID, 10, _asyncRequest, LeaderboardsResultsReturned);
@@ -148,16 +142,10 @@ namespace ProgressCounter
         //Callback for a leaderboard score request. Sets the PB score to the returned one
         public static void LeaderboardsResultsReturned(PlatformLeaderboardsModel.GetScoresResult result, PlatformLeaderboardsModel.LeaderboardScore[] scores, int playerScoreIndex)
         {
-            Console.WriteLine($"GIT GOT RESUOLT: {result}");
-
-            if (result == PlatformLeaderboardsModel.GetScoresResult.OK)
+            if (result == PlatformLeaderboardsModel.GetScoresResult.OK && playerScoreIndex > 0)
             {
-                Console.WriteLine($"GIT GOT SCORE: {playerScoreIndex} {scores.ElementAt(playerScoreIndex).score}");
-                if (playerScoreIndex > 0)
-                {
-                    localHighScore = scores.ElementAt(playerScoreIndex).score;
-                    CalculatePercentage();
-                }
+                localHighScore = scores.ElementAt(playerScoreIndex).score;
+                CalculatePercentage();
             }
         }
     }
